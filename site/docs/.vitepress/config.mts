@@ -1,6 +1,6 @@
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
-import { version } from '../../site/package.json'
+import { version } from '../../../package.json'
 
 export default defineConfig({
   base: '/',
