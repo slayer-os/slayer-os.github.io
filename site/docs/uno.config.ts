@@ -23,4 +23,9 @@ export default defineConfig({
       include: ['./**/*.vue', './**/*.md'],
     },
   },
+  extendTheme: (theme: typeof ) => ({
+    ...theme,
+    colors: {
+    }
+  })
 })
