@@ -6,6 +6,9 @@ import {
   transformerVariantGroup,
 } from 'unocss'
 
+type _FirstArgument<T> = T extends (arg: infer A, ...args: any[]) => any ? A : never;
+type _AllArguments<T> = T extends (arg: infer A, ...args: infer B) => any ? [A, ...B] : never;
+
 export default defineConfig({
   presets: [
     presetUno(),
@@ -23,7 +26,7 @@ export default defineConfig({
       include: ['./**/*.vue', './**/*.md'],
     },
   },
-  extendTheme: (theme: typeof ) => ({
+  extendTheme: (theme: _FirstArgument<Parameters<typeof defineConfig>[0]['extendTheme']>) => ({
     ...theme,
     colors: {
     }
