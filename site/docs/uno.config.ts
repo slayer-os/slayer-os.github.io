@@ -6,8 +6,8 @@ import {
   transformerVariantGroup,
 } from 'unocss'
 
-type _FirstArgument<T> = T extends (arg: infer A, ...args: any[]) => any ? A : never;
-type _AllArguments<T> = T extends (arg: infer A, ...args: infer B) => any ? [A, ...B] : never;
+type _FirstArgument<T> = T extends (arg: infer A, ...args: any[]) => any ? A : never
+type _AllArguments<T> = T extends (arg: infer A, ...args: infer B) => any ? [A, ...B] : never
 
 export default defineConfig({
   presets: [
@@ -39,6 +39,6 @@ export default defineConfig({
       'vp-c-brand-light': '#858ae3', // tropical-indigo
       'vp-c-brand': '#613dc1', // iris
       'vp-c-brand-dark': '#4e148c', // indigo
-    }
-  })
+    },
+  }),
 })

@@ -5,6 +5,12 @@ import { version } from '../../../package.json'
 export default defineConfig({
   base: '/',
   description: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency',
+  head: [
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    ['link', { rel: 'manifest', href: '/site.webmanifest' }],
+    ['meta', { name: 'theme-color', content: '#613dc1' }],
+    ['meta', { name: 'background-color', content: '#2c0735' }],
+  ],
   markdown: {
     headers: {
       level: [0, 0],
@@ -19,10 +25,10 @@ export default defineConfig({
       provider: 'local',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/SlayerOS' },
+      { icon: 'github', link: 'https://github.com/slayer-os/' },
     ],
     editLink: {
-      pattern: 'https://github.com/slayer-os/SlayerOS/edit/main/docs/:path',
+      pattern: 'https://github.com/slayer-os/slayer-os.github.io/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
     nav: nav(),
@@ -45,18 +51,22 @@ export default defineConfig({
 function nav() {
   return [
     { text: 'Guide', link: '/guide/', activeMatch: '/guide/' },
-    { text: 'Configs', link: '/config/', activeMatch: '/config/' },
-    { text: 'Blog', link: '/blog/', activeMatch: '/blog/' },
+    { text: 'Configuration', link: '/config/', activeMatch: '/config/' },
+    { text: 'Contributing', link: '/contributing/', activeMatch: '/contributing/' },
     {
-      text: 'External Docs',
+      text: 'Resources',
       items: [
         {
-          text: 'Vitepress',
-          link: 'https://vitepress.vuejs.org',
+          text: 'OS Development Wiki',
+          link: 'https://wiki.osdev.org/Main_Page',
         },
         {
-          text: 'UnoCSS',
-          link: 'https://uno.antfu.me',
+          text: 'x86_64 Reference',
+          link: 'https://www.felixcloutier.com/x86/',
+        },
+        {
+          text: 'Limine Bootloader',
+          link: 'https://github.com/limine-bootloader/limine',
         },
       ],
     },
@@ -66,6 +76,10 @@ function nav() {
         {
           text: 'Changelog',
           link: 'https://github.com/slayer-os/SlayerOS/blob/main/CHANGELOG.md',
+        },
+        {
+          text: 'Roadmap',
+          link: 'https://github.com/slayer-os/SlayerOS/blob/main/ROADMAP.md',
         },
       ],
     },
@@ -82,10 +96,22 @@ function sidebarGuide() {
       ],
     },
     {
-      text: 'Features',
+      text: 'Architecture',
       collapsible: true,
       items: [
-        { text: 'UnoCSS', link: '/guide/features/unocss' },
+        { text: 'Project Structure', link: '/guide/architecture/overview' },
+        { text: 'Memory Management', link: '/guide/architecture/memory' },
+        { text: 'Bootloader', link: '/guide/architecture/bootloader' },
+        { text: 'Driver', link: '/guide/architecture/driver' },
+        { text: 'LibC', link: '/guide/architecture/libc' },
+      ],
+    },
+    {
+      text: 'Development',
+      collapsible: true,
+      items: [
+        { text: 'Building', link: '/guide/development/building' },
+        { text: 'Debugging', link: '/guide/development/debugging' },
       ],
     },
   ]
@@ -94,10 +120,12 @@ function sidebarGuide() {
 function sidebarConfig() {
   return [
     {
-      text: 'Config',
+      text: 'Configuration',
       items: [
         { text: 'Introduction', link: '/config/' },
-        { text: 'UnoCSS', link: '/config/unocss' },
+        { text: 'Kernel Configuration', link: '/config/kernel' },
+        { text: 'Build Options', link: '/config/build' },
+        { text: 'Hardware Support', link: '/config/hardware' },
       ],
     },
   ]
