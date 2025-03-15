@@ -14,12 +14,12 @@ export default defineConfig({
     ['meta', { name: 'keywords', content: 'SlayerOS, Operating System, x86_64, Minimalism, Efficiency' }],
     ['meta', { property: 'og:title', content: 'SlayerOS' }],
     ['meta', { property: 'og:description', content: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency' }],
-    ['meta', { property: 'og:image', content: '/og.png' }],
+    ['meta', { property: 'og:image', content: 'https://slayer-os.github.io/og.png' }],
     ['meta', { property: 'og:url', content: 'https://slayer-os.github.io' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'SlayerOS' }],
     ['meta', { name: 'twitter:description', content: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency' }],
-    ['meta', { name: 'twitter:image', content: '/og.png' }],
+    ['meta', { name: 'twitter:image', content: 'https://slayer-os.github.io/og.png' }],
   ],
   markdown: {
     headers: {
