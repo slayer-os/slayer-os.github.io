@@ -44,7 +44,7 @@ jobs:
       - run: bun install
 
       - name: Build documentation
-        run: bun build
+        run: bun run build
         
       # Only run changelog and release steps when triggered by a tag
       - name: Update CHANGELOG
