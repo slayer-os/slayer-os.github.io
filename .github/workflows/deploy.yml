@@ -35,6 +35,8 @@ jobs:
           ls -la
           echo "Checking for package.json files:"
           find . -name "package.json" -type f | sort
+          echo "Checking for VitePress config files:"
+          find . -name "config.mts" -o -name "config.ts" -o -name "config.js" | sort
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -49,29 +51,65 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      # Install dependencies in the root directory
+      # Create package.json if it doesn't exist
+      - name: Create package.json if needed
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "Creating package.json file"
+            cat > package.json << EOF
+          {
+            "name": "slayer-os-docs",
+            "version": "1.0.0",
+            "description": "SlayerOS Documentation",
+            "scripts": {
+              "docs:dev": "vitepress dev site/docs",
+              "docs:build": "vitepress build site/docs",
+              "docs:preview": "vitepress preview site/docs"
+            },
+            "dependencies": {
+              "vitepress": "^1.0.0-rc.40",
+              "vue": "^3.3.11"
+            }
+          }
+          EOF
+          else
+            echo "package.json already exists"
+          fi
+
+      # Install dependencies
       - name: Install dependencies
         run: bun install
 
-      # Build documentation using the correct path
+      # Build documentation
       - name: Build documentation
         run: |
-          # Try different possible build commands based on common VitePress setups
-          if [ -f "package.json" ]; then
-            echo "Found package.json in root directory"
-            if grep -q "\"docs:build\"" package.json; then
-              echo "Running docs:build script"
-              bun run docs:build
-            elif grep -q "\"build\"" package.json; then
-              echo "Running build script"
-              bun run build
-            else
-              echo "No build script found, trying VitePress directly"
-              bunx vitepress build site/docs
-            fi
+          # Try to find the VitePress config file to determine the correct path
+          CONFIG_FILES=$(find . -name "config.mts" -o -name "config.ts" -o -name "config.js" | grep -i vitepress)
+          
+          if [ -n "$CONFIG_FILES" ]; then
+            echo "Found VitePress config files:"
+            echo "$CONFIG_FILES"
+            
+            # Extract the docs path from the first config file path
+            CONFIG_PATH=$(echo "$CONFIG_FILES" | head -n 1)
+            DOCS_PATH=$(dirname $(dirname "$CONFIG_PATH"))
+            echo "Docs path appears to be: $DOCS_PATH"
+            
+            # Build using the detected path
+            echo "Building VitePress site at $DOCS_PATH"
+            bunx vitepress build "$DOCS_PATH"
           else
-            echo "No package.json found in root directory"
-            exit 1
+            echo "No VitePress config found, trying default paths"
+            if [ -d "site/docs" ]; then
+              echo "Building from site/docs"
+              bunx vitepress build site/docs
+            elif [ -d "docs" ]; then
+              echo "Building from docs"
+              bunx vitepress build docs
+            else
+              echo "Could not determine docs location"
+              exit 1
+            fi
           fi
         
       # Only run changelog and release steps when triggered by a tag
@@ -106,33 +144,28 @@ jobs:
       - name: Check build output
         run: |
           echo "Checking possible build output locations:"
-          ls -la site/docs/.vitepress/dist || echo "site/docs/.vitepress/dist not found"
-          ls -la docs/.vitepress/dist || echo "docs/.vitepress/dist not found"
-          ls -la .vitepress/dist || echo ".vitepress/dist not found"
+          find . -path "*/.vitepress/dist" -type d | sort
 
-      # Create .nojekyll file to prevent Jekyll processing
-      - name: Create .nojekyll file
+      # Create .nojekyll file and determine build directory
+      - name: Setup build directory
         run: |
-          # Try different possible build output locations
-          if [ -d "site/docs/.vitepress/dist" ]; then
-            touch site/docs/.vitepress/dist/.nojekyll
-            echo "Build output is in site/docs/.vitepress/dist"
-            BUILD_DIR="site/docs/.vitepress/dist"
-          elif [ -d "docs/.vitepress/dist" ]; then
-            touch docs/.vitepress/dist/.nojekyll
-            echo "Build output is in docs/.vitepress/dist"
-            BUILD_DIR="docs/.vitepress/dist"
-          elif [ -d ".vitepress/dist" ]; then
-            touch .vitepress/dist/.nojekyll
-            echo "Build output is in .vitepress/dist"
-            BUILD_DIR=".vitepress/dist"
+          # Find the VitePress dist directory
+          DIST_DIRS=$(find . -path "*/.vitepress/dist" -type d | sort)
+          
+          if [ -n "$DIST_DIRS" ]; then
+            # Use the first dist directory found
+            BUILD_DIR=$(echo "$DIST_DIRS" | head -n 1)
+            echo "Found build directory: $BUILD_DIR"
+            
+            # Create .nojekyll file
+            touch "$BUILD_DIR/.nojekyll"
+            
+            # Export the build directory for later steps
+            echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
           else
-            echo "Could not find build output directory"
+            echo "Could not find any VitePress dist directory"
             exit 1
           fi
-          
-          # Export the build directory for later steps
-          echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
 
       # Deploy directly to main branch in a docs folder
       - name: Deploy to main branch docs folder
