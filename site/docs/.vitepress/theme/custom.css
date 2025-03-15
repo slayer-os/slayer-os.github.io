@@ -1,0 +1,41 @@
+:root {
+  --vp-c-brand-light: #858ae3;  /* tropical-indigo */
+  --vp-c-brand: #613dc1;        /* iris */
+  --vp-c-brand-dark: #4e148c;   /* indigo */
+  
+  /* Text colors */
+  --vp-c-text-light-1: #2c0735; /* russian-violet */
+  --vp-c-text-light-2: #4e148c; /* indigo */
+  --vp-c-text-dark-1: #97dffc;  /* pale-azure */
+  --vp-c-text-dark-2: #858ae3;  /* tropical-indigo */
+  
+  /* Background colors */
+  --vp-c-bg-alt: #f8f8fc;       /* light background */
+  
+  /* Custom background gradient (optional) */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(
+    135deg, 
+    #97dffc 0%, 
+    #858ae3 40%, 
+    #613dc1 80%, 
+    #4e148c 100%
+  );
+  
+  /* Border colors */
+  --vp-c-border: rgba(97, 61, 193, 0.2); /* iris with opacity */
+  --vp-c-divider: rgba(97, 61, 193, 0.1); /* iris with opacity */
+}
+
+/* Dark mode adjustments */
+.dark {
+  --vp-c-bg: #1a1a2e;
+  --vp-c-bg-alt: #15152b;
+  --vp-c-border: rgba(151, 223, 252, 0.2); /* pale-azure with opacity */
+  --vp-c-divider: rgba(151, 223, 252, 0.1); /* pale-azure with opacity */
+}
+
+/* Additional custom styles */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #97dffc, #858ae3, #613dc1, #4e148c, #2c0735);
+}

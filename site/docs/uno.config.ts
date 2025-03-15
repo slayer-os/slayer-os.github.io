@@ -29,6 +29,16 @@ export default defineConfig({
   extendTheme: (theme: _FirstArgument<Parameters<typeof defineConfig>[0]['extendTheme']>) => ({
     ...theme,
     colors: {
+      ...theme,
+      'pale-azure': '#97dffc',
+      'tropical-indigo': '#858ae3',
+      'iris': '#613dc1',
+      'indigo': '#4e148c',
+      'russian-violet': '#2c0735',
+      // Map these colors to CSS variables used in VitePress
+      'vp-c-brand-light': '#858ae3', // tropical-indigo
+      'vp-c-brand': '#613dc1', // iris
+      'vp-c-brand-dark': '#4e148c', // indigo
     }
   })
 })
