@@ -28,6 +28,14 @@ jobs:
         with:
           fetch-depth: 0 # Important for changelog generation
 
+      # Debug: Print directory structure to understand the repo layout
+      - name: Debug directory structure
+        run: |
+          echo "Current directory structure:"
+          ls -la
+          echo "Checking for package.json files:"
+          find . -name "package.json" -type f | sort
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -41,14 +49,30 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - run: |
-          cd site
-          bun install
+      # Install dependencies in the root directory
+      - name: Install dependencies
+        run: bun install
 
+      # Build documentation using the correct path
       - name: Build documentation
         run: |
-          cd site
-          bun run build
+          # Try different possible build commands based on common VitePress setups
+          if [ -f "package.json" ]; then
+            echo "Found package.json in root directory"
+            if grep -q "\"docs:build\"" package.json; then
+              echo "Running docs:build script"
+              bun run docs:build
+            elif grep -q "\"build\"" package.json; then
+              echo "Running build script"
+              bun run build
+            else
+              echo "No build script found, trying VitePress directly"
+              bunx vitepress build site/docs
+            fi
+          else
+            echo "No package.json found in root directory"
+            exit 1
+          fi
         
       # Only run changelog and release steps when triggered by a tag
       - name: Update CHANGELOG
@@ -78,9 +102,37 @@ jobs:
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           file_pattern: CHANGELOG.md
 
+      # Debug: Check the build output location
+      - name: Check build output
+        run: |
+          echo "Checking possible build output locations:"
+          ls -la site/docs/.vitepress/dist || echo "site/docs/.vitepress/dist not found"
+          ls -la docs/.vitepress/dist || echo "docs/.vitepress/dist not found"
+          ls -la .vitepress/dist || echo ".vitepress/dist not found"
+
       # Create .nojekyll file to prevent Jekyll processing
       - name: Create .nojekyll file
-        run: touch site/docs/.vitepress/dist/.nojekyll
+        run: |
+          # Try different possible build output locations
+          if [ -d "site/docs/.vitepress/dist" ]; then
+            touch site/docs/.vitepress/dist/.nojekyll
+            echo "Build output is in site/docs/.vitepress/dist"
+            BUILD_DIR="site/docs/.vitepress/dist"
+          elif [ -d "docs/.vitepress/dist" ]; then
+            touch docs/.vitepress/dist/.nojekyll
+            echo "Build output is in docs/.vitepress/dist"
+            BUILD_DIR="docs/.vitepress/dist"
+          elif [ -d ".vitepress/dist" ]; then
+            touch .vitepress/dist/.nojekyll
+            echo "Build output is in .vitepress/dist"
+            BUILD_DIR=".vitepress/dist"
+          else
+            echo "Could not find build output directory"
+            exit 1
+          fi
+          
+          # Export the build directory for later steps
+          echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
 
       # Deploy directly to main branch in a docs folder
       - name: Deploy to main branch docs folder
@@ -89,7 +141,7 @@ jobs:
           mkdir -p docs
           
           # Copy the built files to the docs directory
-          cp -r site/docs/.vitepress/dist/* docs/
+          cp -r $BUILD_DIR/* docs/
           
           # Add .nojekyll file
           touch docs/.nojekyll
