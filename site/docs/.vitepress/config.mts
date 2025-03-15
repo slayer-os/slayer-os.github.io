@@ -10,6 +10,16 @@ export default defineConfig({
     ['link', { rel: 'manifest', href: '/site.webmanifest' }],
     ['meta', { name: 'theme-color', content: '#613dc1' }],
     ['meta', { name: 'background-color', content: '#2c0735' }],
+    ['meta', { name: 'description', content: 'SlayerOS - A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency' }],
+    ['meta', { name: 'keywords', content: 'SlayerOS, Operating System, x86_64, Minimalism, Efficiency' }],
+    ['meta', { property: 'og:title', content: 'SlayerOS' }],
+    ['meta', { property: 'og:description', content: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency' }],
+    ['meta', { property: 'og:image', content: '/og.png' }],
+    ['meta', { property: 'og:url', content: 'https://slayer-os.github.io' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'SlayerOS' }],
+    ['meta', { name: 'twitter:description', content: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency' }],
+    ['meta', { name: 'twitter:image', content: '/og.png' }],
   ],
   markdown: {
     headers: {
