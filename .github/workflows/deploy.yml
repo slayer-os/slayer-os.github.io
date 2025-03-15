@@ -41,10 +41,14 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - run: bun install
+      - run: |
+          cd site
+          bun install
 
       - name: Build documentation
-        run: bun run build
+        run: |
+          cd site
+          bun run build
         
       # Only run changelog and release steps when triggered by a tag
       - name: Update CHANGELOG
