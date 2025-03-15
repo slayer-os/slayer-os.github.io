@@ -28,6 +28,14 @@ jobs:
         with:
           fetch-depth: 0 # Important for changelog generation
 
+      - name: Setup upload-artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dummy-artifact
+          path: README.md
+          retention-days: 1
+          if-no-files-found: ignore
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
