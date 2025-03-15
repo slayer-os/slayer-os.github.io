@@ -1,9 +1,9 @@
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
-import { version } from '../../../package.json'
+import { version } from '../package.json'
 
 export default defineConfig({
-  base: '/slayer-os/',
+  base: '/',
   description: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency',
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],

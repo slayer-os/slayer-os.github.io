@@ -41,10 +41,14 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - run: bun install
+      - run: |
+          cd site
+          bun install
 
       - name: Build documentation
-        run: bun run build
+        run: |
+          cd site
+          bun run build
         
       # Only run changelog and release steps when triggered by a tag
       - name: Update CHANGELOG
@@ -74,10 +78,29 @@ jobs:
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           file_pattern: CHANGELOG.md
 
-      # Alternative approach: Use peaceiris/actions-gh-pages instead
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: site/docs/.vitepress/dist
-          # cname: example.com # if you want to deploy to custom domain
+      # Create .nojekyll file to prevent Jekyll processing
+      - name: Create .nojekyll file
+        run: touch site/docs/.vitepress/dist/.nojekyll
+
+      # Deploy directly to main branch in a docs folder
+      - name: Deploy to main branch docs folder
+        run: |
+          # Create a docs directory at the root of the repository
+          mkdir -p docs
+          
+          # Copy the built files to the docs directory
+          cp -r site/docs/.vitepress/dist/* docs/
+          
+          # Add .nojekyll file
+          touch docs/.nojekyll
+          
+          # Configure git
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Add and commit the changes
+          git add docs/
+          git commit -m "Update documentation" || echo "No changes to commit"
+          
+          # Push to main branch
+          git push origin main
