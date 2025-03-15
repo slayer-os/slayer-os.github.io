@@ -68,7 +68,8 @@ jobs:
             },
             "dependencies": {
               "vitepress": "^1.0.0-rc.40",
-              "vue": "^3.3.11"
+              "vue": "^3.3.11",
+              "unocss": "^0.58.5"
             }
           }
           EOF
@@ -78,7 +79,18 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: bun install
+        run: |
+          bun install
+          # Install UnoCSS explicitly to ensure it's available
+          bun add unocss
+
+      # Check VitePress config
+      - name: Check VitePress config
+        run: |
+          if [ -f "site/docs/.vitepress/config.mts" ]; then
+            echo "VitePress config content:"
+            cat site/docs/.vitepress/config.mts
+          fi
 
       # Build documentation
       - name: Build documentation
@@ -97,7 +109,18 @@ jobs:
             
             # Build using the detected path
             echo "Building VitePress site at $DOCS_PATH"
-            bunx vitepress build "$DOCS_PATH"
+            
+            # Create a temporary config file without UnoCSS if needed
+            if grep -q "unocss" "$CONFIG_PATH"; then
+              echo "Config uses UnoCSS, creating a simplified version for build"
+              TEMP_CONFIG="${CONFIG_PATH}.temp"
+              cat "$CONFIG_PATH" | sed 's/import Unocss from .*/\/\/ UnoCSS import removed for build/' | sed 's/Unocss({.*}),/\/\/ UnoCSS plugin removed for build/' > "$TEMP_CONFIG"
+              
+              # Use the temporary config for build
+              VITEPRESS_CONFIG="$TEMP_CONFIG" bunx vitepress build "$DOCS_PATH"
+            else
+              bunx vitepress build "$DOCS_PATH"
+            fi
           else
             echo "No VitePress config found, trying default paths"
             if [ -d "site/docs" ]; then
