@@ -28,14 +28,6 @@ jobs:
         with:
           fetch-depth: 0 # Important for changelog generation
 
-      - name: Setup upload-artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: dummy-artifact
-          path: README.md
-          retention-days: 1
-          if-no-files-found: ignore
-
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -82,11 +74,10 @@ jobs:
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           file_pattern: CHANGELOG.md
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: site/docs/.vitepress/dist
-
+      # Alternative approach: Use peaceiris/actions-gh-pages instead
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
-        id: deployment
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site/docs/.vitepress/dist
+          # cname: example.com # if you want to deploy to custom domain
