@@ -1,32 +1,55 @@
-name: Deploy
+name: Deploy Documentation
 
 on:
+  # Deploy on pushes to main branch
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
+      # Allow manual triggering
+    branches:
+      - main
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Important for changelog generation
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-
       - name: Set node version to 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
       - run: bun install
 
-      - run: bun build
-
+      - name: Build documentation
+        run: bun build
+        
+      # Only run changelog and release steps when triggered by a tag
       - name: Update CHANGELOG
+        if: startsWith(github.ref, 'refs/tags/')
         id: changelog
         uses: requarks/changelog-action@v1
         with:
@@ -34,6 +57,7 @@ jobs:
           tag: ${{ github.ref_name }}
 
       - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: ncipollo/release-action@v1.14.0
         with:
           allowUpdates: true
@@ -44,15 +68,18 @@ jobs:
           token: ${{ github.token }}
 
       - name: Commit CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/')
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: main
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
           file_pattern: CHANGELOG.md
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vitepress/dist
-          # cname: example.com # if wanna deploy to custom domain
+          path: site/docs/.vitepress/dist
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
+        id: deployment
