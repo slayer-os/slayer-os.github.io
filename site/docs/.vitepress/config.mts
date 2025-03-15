@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 import { version } from '../../../package.json'
 
 export default defineConfig({
-  base: '/',
+  base: '/slayer-os/',
   description: 'A lightweight, fast, and sleek operating system designed for x86_64 processors, focused on minimalism and efficiency',
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
